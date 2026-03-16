@@ -114,6 +114,36 @@ export default function DashboardPage() {
     return new Date(value).toLocaleString();
   }
 
+  function formatTime(value) {
+    return new Date(value).toLocaleTimeString([], {
+      hour: "numeric",
+      minute: "2-digit",
+    });
+  }
+
+  function formatDisplayDate(value) {
+    const eventDate = new Date(value);
+    const today = new Date();
+
+    const isSameDay =
+      eventDate.getFullYear() === today.getFullYear() &&
+      eventDate.getMonth() === today.getMonth() &&
+      eventDate.getDate() === today.getDate();
+
+    if (isSameDay) return "Today";
+
+    return eventDate.toLocaleDateString();
+  }
+
+  function getDateKey(value) {
+    const eventDate = new Date(value);
+    const year = eventDate.getFullYear();
+    const month = String(eventDate.getMonth() + 1).padStart(2, "0");
+    const day = String(eventDate.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  }
+
   function isToday(dateString) {
     const eventDate = new Date(dateString);
     const today = new Date();
@@ -143,6 +173,29 @@ export default function DashboardPage() {
     });
 
     return summary;
+  }, [events]);
+
+  const groupedEvents = useMemo(() => {
+    const groups = {};
+
+    events.forEach((event) => {
+      const dateKey = getDateKey(event.created_at);
+      const groupKey = `${dateKey}-${event.type}`;
+
+      if (!groups[groupKey]) {
+        groups[groupKey] = {
+          id: groupKey,
+          type: event.type,
+          dateKey,
+          displayDate: formatDisplayDate(event.created_at),
+          events: [],
+        };
+      }
+
+      groups[groupKey].events.push(event);
+    });
+
+    return Object.values(groups);
   }, [events]);
 
   return (
@@ -309,13 +362,13 @@ export default function DashboardPage() {
 
         {!selectedDogId ? (
           <p style={{ color: "#4b5563" }}>Add a dog first to start logging.</p>
-        ) : events.length === 0 ? (
+        ) : groupedEvents.length === 0 ? (
           <p style={{ color: "#4b5563" }}>No events logged yet.</p>
         ) : (
           <div style={{ display: "grid", gap: "1rem" }}>
-            {events.map((event) => (
+            {groupedEvents.map((group) => (
               <div
-                key={event.id}
+                key={group.id}
                 style={{
                   border: "1px solid #ddd",
                   borderRadius: "12px",
@@ -328,41 +381,75 @@ export default function DashboardPage() {
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
-                    alignItems: "flex-start",
+                    alignItems: "center",
                     gap: "1rem",
                     flexWrap: "wrap",
+                    marginBottom: "0.75rem",
                   }}
                 >
                   <div>
                     <h3
                       style={{
-                        marginBottom: "0.4rem",
+                        marginBottom: "0.2rem",
                         textTransform: "capitalize",
                       }}
                     >
-                      {event.type}
+                      {group.type}
                     </h3>
-                    <p style={{ color: "#4b5563" }}>
-                      {formatDateTime(event.created_at)}
-                    </p>
+                    <p style={{ color: "#4b5563" }}>{group.displayDate}</p>
                   </div>
 
-                  <button
-                    onClick={() => handleDeleteEvent(event.id)}
-                    disabled={deletingEventId === event.id}
-                    style={{
-                      padding: "0.65rem 0.9rem",
-                      borderRadius: "10px",
-                      border: "1px solid #d1d5db",
-                      backgroundColor: "#fff",
-                      color: "#111827",
-                      cursor: "pointer",
-                      width: "auto",
-                      minWidth: "110px",
-                    }}
-                  >
-                    {deletingEventId === event.id ? "Deleting..." : "Delete"}
-                  </button>
+                  <p style={{ color: "#4b5563", fontSize: "0.95rem" }}>
+                    {group.events.length} log
+                    {group.events.length > 1 ? "s" : ""}
+                  </p>
+                </div>
+
+                <div
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: "0.6rem",
+                  }}
+                >
+                  {group.events.map((event) => (
+                    <div
+                      key={event.id}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.45rem",
+                        padding: "0.55rem 0.7rem",
+                        borderRadius: "999px",
+                        border: "1px solid #d1d5db",
+                        backgroundColor: "#f9fafb",
+                      }}
+                    >
+                      <span style={{ fontSize: "0.95rem" }}>
+                        {formatTime(event.created_at)}
+                      </span>
+
+                      <button
+                        onClick={() => handleDeleteEvent(event.id)}
+                        disabled={deletingEventId === event.id}
+                        style={{
+                          border: "none",
+                          background: "transparent",
+                          color: "#6b7280",
+                          cursor: "pointer",
+                          width: "auto",
+                          minWidth: "auto",
+                          minHeight: "auto",
+                          padding: 0,
+                          fontSize: "0.95rem",
+                          lineHeight: 1,
+                        }}
+                        title="Delete this log"
+                      >
+                        {deletingEventId === event.id ? "..." : "×"}
+                      </button>
+                    </div>
+                  ))}
                 </div>
               </div>
             ))}
