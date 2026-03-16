@@ -9,6 +9,7 @@ export default function DogsPage() {
   const [birthdate, setBirthdate] = useState("");
   const [dogs, setDogs] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [deletingDogId, setDeletingDogId] = useState("");
   const [message, setMessage] = useState("");
 
   async function fetchDogs() {
@@ -56,6 +57,30 @@ export default function DogsPage() {
     setMessage("Dog added!");
     await fetchDogs();
     setLoading(false);
+  }
+
+  async function handleDeleteDog(dogId, dogName) {
+    const confirmed = window.confirm(
+      `Delete ${dogName}? This will also delete that dog's events.`,
+    );
+
+    if (!confirmed) return;
+
+    setDeletingDogId(dogId);
+    setMessage("");
+
+    const { error } = await supabase.from("dogs").delete().eq("id", dogId);
+
+    if (error) {
+      console.error("Error deleting dog:", error);
+      setMessage("Could not delete dog.");
+      setDeletingDogId("");
+      return;
+    }
+
+    setMessage("Dog deleted.");
+    await fetchDogs();
+    setDeletingDogId("");
   }
 
   return (
@@ -166,9 +191,38 @@ export default function DogsPage() {
                   color: "#111827",
                 }}
               >
-                <h3 style={{ marginBottom: "0.5rem" }}>{dog.name}</h3>
-                <p>Breed: {dog.breed || "Not added"}</p>
-                <p>Birthdate: {dog.birthdate || "Not added"}</p>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                    gap: "1rem",
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <div>
+                    <h3 style={{ marginBottom: "0.5rem" }}>{dog.name}</h3>
+                    <p>Breed: {dog.breed || "Not added"}</p>
+                    <p>Birthdate: {dog.birthdate || "Not added"}</p>
+                  </div>
+
+                  <button
+                    onClick={() => handleDeleteDog(dog.id, dog.name)}
+                    disabled={deletingDogId === dog.id}
+                    style={{
+                      padding: "0.65rem 0.9rem",
+                      borderRadius: "10px",
+                      border: "1px solid #d1d5db",
+                      backgroundColor: "#fff",
+                      color: "#111827",
+                      cursor: "pointer",
+                      width: "auto",
+                      minWidth: "110px",
+                    }}
+                  >
+                    {deletingDogId === dog.id ? "Deleting..." : "Delete"}
+                  </button>
+                </div>
               </div>
             ))}
           </div>
