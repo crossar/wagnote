@@ -11,6 +11,7 @@ export default function DashboardPage() {
   const [events, setEvents] = useState([]);
   const [message, setMessage] = useState("");
   const [loadingEvent, setLoadingEvent] = useState("");
+  const [deletingEventId, setDeletingEventId] = useState("");
 
   async function fetchDogs() {
     const { data, error } = await supabase
@@ -89,6 +90,24 @@ export default function DashboardPage() {
     setMessage(`${type} logged!`);
     await fetchEvents(selectedDogId);
     setLoadingEvent("");
+  }
+
+  async function handleDeleteEvent(eventId) {
+    setDeletingEventId(eventId);
+    setMessage("");
+
+    const { error } = await supabase.from("events").delete().eq("id", eventId);
+
+    if (error) {
+      console.error("Error deleting event:", error);
+      setMessage("Could not delete event.");
+      setDeletingEventId("");
+      return;
+    }
+
+    setMessage("Event deleted.");
+    await fetchEvents(selectedDogId);
+    setDeletingEventId("");
   }
 
   function formatDateTime(value) {
@@ -305,17 +324,46 @@ export default function DashboardPage() {
                   color: "#111827",
                 }}
               >
-                <h3
+                <div
                   style={{
-                    marginBottom: "0.4rem",
-                    textTransform: "capitalize",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                    gap: "1rem",
+                    flexWrap: "wrap",
                   }}
                 >
-                  {event.type}
-                </h3>
-                <p style={{ color: "#4b5563" }}>
-                  {formatDateTime(event.created_at)}
-                </p>
+                  <div>
+                    <h3
+                      style={{
+                        marginBottom: "0.4rem",
+                        textTransform: "capitalize",
+                      }}
+                    >
+                      {event.type}
+                    </h3>
+                    <p style={{ color: "#4b5563" }}>
+                      {formatDateTime(event.created_at)}
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={() => handleDeleteEvent(event.id)}
+                    disabled={deletingEventId === event.id}
+                    style={{
+                      padding: "0.65rem 0.9rem",
+                      borderRadius: "10px",
+                      border: "1px solid #d1d5db",
+                      backgroundColor: "#fff",
+                      color: "#111827",
+                      cursor: "pointer",
+                      width: "auto",
+                      minWidth: "110px",
+                    }}
+                  >
+                    {deletingEventId === event.id ? "Deleting..." : "Delete"}
+                  </button>
+                </div>
               </div>
             ))}
           </div>
