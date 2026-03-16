@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
 const EVENT_TYPES = ["pee", "poop", "meal", "walk", "medication"];
@@ -95,7 +95,36 @@ export default function DashboardPage() {
     return new Date(value).toLocaleString();
   }
 
+  function isToday(dateString) {
+    const eventDate = new Date(dateString);
+    const today = new Date();
+
+    return (
+      eventDate.getFullYear() === today.getFullYear() &&
+      eventDate.getMonth() === today.getMonth() &&
+      eventDate.getDate() === today.getDate()
+    );
+  }
+
   const selectedDog = dogs.find((dog) => dog.id === selectedDogId);
+
+  const todaySummary = useMemo(() => {
+    const summary = {
+      pee: 0,
+      poop: 0,
+      meal: 0,
+      walk: 0,
+      medication: 0,
+    };
+
+    events.forEach((event) => {
+      if (isToday(event.created_at) && summary[event.type] !== undefined) {
+        summary[event.type] += 1;
+      }
+    });
+
+    return summary;
+  }, [events]);
 
   return (
     <main
@@ -202,6 +231,57 @@ export default function DashboardPage() {
 
         {message && (
           <p style={{ marginTop: "1rem", color: "#111827" }}>{message}</p>
+        )}
+      </section>
+
+      <section
+        style={{
+          backgroundColor: "#fff",
+          border: "1px solid #ddd",
+          borderRadius: "16px",
+          padding: "1.25rem",
+          marginBottom: "2rem",
+        }}
+      >
+        <h2 style={{ marginBottom: "1rem" }}>Today Summary</h2>
+
+        {!selectedDogId ? (
+          <p style={{ color: "#4b5563" }}>
+            Add a dog first to see today’s summary.
+          </p>
+        ) : (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+              gap: "0.75rem",
+            }}
+          >
+            {EVENT_TYPES.map((type) => (
+              <div
+                key={type}
+                style={{
+                  border: "1px solid #e5e7eb",
+                  borderRadius: "12px",
+                  padding: "1rem",
+                  backgroundColor: "#f9fafb",
+                }}
+              >
+                <h3
+                  style={{
+                    marginBottom: "0.35rem",
+                    textTransform: "capitalize",
+                    fontSize: "1rem",
+                  }}
+                >
+                  {type}
+                </h3>
+                <p style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
+                  {todaySummary[type]}
+                </p>
+              </div>
+            ))}
+          </div>
         )}
       </section>
 
