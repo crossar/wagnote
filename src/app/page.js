@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function HomePage() {
   return (
     <main
@@ -62,7 +64,8 @@ export default function HomePage() {
             marginBottom: "3rem",
           }}
         >
-          <button
+          <Link
+            href="/dogs"
             style={{
               padding: "0.9rem 1.4rem",
               borderRadius: "12px",
@@ -71,12 +74,14 @@ export default function HomePage() {
               color: "#fff",
               fontSize: "1rem",
               cursor: "pointer",
+              textDecoration: "none",
             }}
           >
             Get Started
-          </button>
+          </Link>
 
-          <button
+          <Link
+            href="/dashboard"
             style={{
               padding: "0.9rem 1.4rem",
               borderRadius: "12px",
@@ -85,10 +90,11 @@ export default function HomePage() {
               color: "#111827",
               fontSize: "1rem",
               cursor: "pointer",
+              textDecoration: "none",
             }}
           >
-            See How It Works
-          </button>
+            Open Dashboard
+          </Link>
         </div>
 
         <section
