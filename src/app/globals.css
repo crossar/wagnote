@@ -94,3 +94,17 @@ main {
     font-size: 14px;
   }
 }
+
+.container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (max-width: 640px) {
+  body {
+    line-height: 1.6;
+  }
+}
