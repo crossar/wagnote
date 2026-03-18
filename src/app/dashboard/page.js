@@ -216,23 +216,33 @@ export default function DashboardPage() {
   }, [events]);
 
   const groupedByDay = useMemo(() => {
-    const groups = {};
+    const dayGroups = {};
 
     events.forEach((event) => {
       const dateKey = getDateKey(event.created_at);
 
-      if (!groups[dateKey]) {
-        groups[dateKey] = {
+      if (!dayGroups[dateKey]) {
+        dayGroups[dateKey] = {
           dateKey,
           displayDate: formatDisplayDate(event.created_at),
+          typeGroups: {},
+        };
+      }
+
+      if (!dayGroups[dateKey].typeGroups[event.type]) {
+        dayGroups[dateKey].typeGroups[event.type] = {
+          type: event.type,
           events: [],
         };
       }
 
-      groups[dateKey].events.push(event);
+      dayGroups[dateKey].typeGroups[event.type].events.push(event);
     });
 
-    return Object.values(groups);
+    return Object.values(dayGroups).map((dayGroup) => ({
+      ...dayGroup,
+      typeGroups: Object.values(dayGroup.typeGroups),
+    }));
   }, [events]);
 
   return (
@@ -444,19 +454,15 @@ export default function DashboardPage() {
                   {dayGroup.displayDate}
                 </h3>
 
-                <div style={{ display: "grid", gap: "0.6rem" }}>
-                  {dayGroup.events.map((event) => {
-                    const meta = EVENT_META[event.type];
+                <div style={{ display: "grid", gap: "0.75rem" }}>
+                  {dayGroup.typeGroups.map((group) => {
+                    const meta = EVENT_META[group.type];
 
                     return (
                       <div
-                        key={event.id}
+                        key={`${dayGroup.dateKey}-${group.type}`}
                         style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          gap: "0.75rem",
-                          padding: "0.8rem 0.9rem",
+                          padding: "0.9rem",
                           borderRadius: "12px",
                           backgroundColor: meta.bg,
                           border: `1px solid ${meta.border}`,
@@ -467,7 +473,7 @@ export default function DashboardPage() {
                             display: "flex",
                             alignItems: "center",
                             gap: "0.75rem",
-                            minWidth: 0,
+                            marginBottom: "0.6rem",
                           }}
                         >
                           <div
@@ -487,7 +493,7 @@ export default function DashboardPage() {
                             {meta.icon}
                           </div>
 
-                          <div style={{ minWidth: 0 }}>
+                          <div>
                             <p
                               style={{
                                 fontWeight: "bold",
@@ -496,35 +502,63 @@ export default function DashboardPage() {
                                 marginBottom: "0.1rem",
                               }}
                             >
-                              {event.type}
+                              {group.type}
                             </p>
-                            <p
-                              style={{ color: "#4b5563", fontSize: "0.95rem" }}
-                            >
-                              {formatTime(event.created_at)}
+                            <p style={{ color: "#4b5563", fontSize: "0.9rem" }}>
+                              {group.events.length} log
+                              {group.events.length > 1 ? "s" : ""}
                             </p>
                           </div>
                         </div>
 
-                        <button
-                          onClick={() => handleDeleteEvent(event.id)}
-                          disabled={deletingEventId === event.id}
+                        <div
                           style={{
-                            border: "none",
-                            backgroundColor: "#fff",
-                            color: "#6b7280",
-                            cursor: "pointer",
-                            width: "40px",
-                            minWidth: "40px",
-                            minHeight: "40px",
-                            borderRadius: "10px",
-                            fontSize: "1rem",
-                            flexShrink: 0,
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: "0.5rem",
                           }}
-                          title="Delete this log"
                         >
-                          {deletingEventId === event.id ? "..." : "✕"}
-                        </button>
+                          {group.events.map((event) => (
+                            <div
+                              key={event.id}
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "0.45rem",
+                                padding: "0.45rem 0.7rem",
+                                borderRadius: "999px",
+                                backgroundColor: "#fff",
+                                border: `1px solid ${meta.border}`,
+                              }}
+                            >
+                              <span
+                                style={{ fontSize: "0.9rem", color: "#374151" }}
+                              >
+                                {formatTime(event.created_at)}
+                              </span>
+
+                              <button
+                                onClick={() => handleDeleteEvent(event.id)}
+                                disabled={deletingEventId === event.id}
+                                style={{
+                                  border: "none",
+                                  background: "transparent",
+                                  color: "#6b7280",
+                                  cursor: "pointer",
+                                  width: "auto",
+                                  minWidth: "auto",
+                                  minHeight: "auto",
+                                  padding: 0,
+                                  fontSize: "0.95rem",
+                                  lineHeight: 1,
+                                }}
+                                title="Delete this log"
+                              >
+                                {deletingEventId === event.id ? "..." : "×"}
+                              </button>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     );
                   })}
