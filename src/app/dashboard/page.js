@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import styles from "./dashboard.module.css";
 
 const EVENT_TYPES = ["pee", "poop", "meal", "walk", "medication"];
 
@@ -258,91 +259,23 @@ export default function DashboardPage() {
   }, [events]);
 
   return (
-    <main
-      style={{
-        padding: "2rem 1rem 3rem",
-        maxWidth: "1100px",
-        margin: "0 auto",
-        color: "#18212f",
-      }}
-    >
-      <section
-        style={{
-          marginBottom: "1.5rem",
-          padding: "1.5rem",
-          borderRadius: "24px",
-          background:
-            "linear-gradient(135deg, #fffdf8 0%, #f7f4ee 55%, #f1efe8 100%)",
-          border: "1px solid #e9e2d7",
-          boxShadow: "0 10px 30px rgba(24, 33, 47, 0.06)",
-        }}
-      >
-        <p
-          style={{
-            display: "inline-block",
-            marginBottom: "0.9rem",
-            padding: "0.35rem 0.7rem",
-            borderRadius: "999px",
-            backgroundColor: "#ffffff",
-            border: "1px solid #e5e7eb",
-            color: "#6b7280",
-            fontSize: "0.85rem",
-            fontWeight: "bold",
-          }}
-        >
-          Daily Dog Activity Tracker
-        </p>
-
-        <h1
-          style={{
-            fontSize: "clamp(2rem, 5vw, 3rem)",
-            marginBottom: "0.4rem",
-            lineHeight: 1.05,
-          }}
-        >
-          Dashboard
-        </h1>
-
-        <p
-          style={{
-            color: "#5b6472",
-            fontSize: "1rem",
-            maxWidth: "680px",
-            lineHeight: 1.65,
-          }}
-        >
+    <main className={styles.page}>
+      {/* HERO */}
+      <section className={styles.hero}>
+        <p className={styles.heroBadge}>Daily Dog Activity Tracker</p>
+        <h1 className={styles.heroTitle}>Dashboard</h1>
+        <p className={styles.heroText}>
           Log your dog’s routine in seconds and keep a compact, colorful
           timeline of potty breaks, meals, walks, and medications.
         </p>
       </section>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "minmax(280px, 340px) minmax(0, 1fr)",
-          gap: "1.25rem",
-          alignItems: "start",
-        }}
-      >
-        <div style={{ display: "grid", gap: "1.25rem" }}>
-          <section
-            style={{
-              backgroundColor: "#ffffff",
-              border: "1px solid #e5e7eb",
-              borderRadius: "24px",
-              padding: "1.25rem",
-              boxShadow: "0 10px 30px rgba(24, 33, 47, 0.05)",
-            }}
-          >
-            <label
-              htmlFor="dog-select"
-              style={{
-                display: "block",
-                fontWeight: "bold",
-                marginBottom: "0.75rem",
-                color: "#243041",
-              }}
-            >
+      {/* LAYOUT */}
+      <div className={styles.grid}>
+        <div className={styles.sidebar}>
+          {/* CARD */}
+          <section className={styles.card}>
+            <label htmlFor="dog-select" className={styles.label}>
               Select Dog
             </label>
 
@@ -350,15 +283,7 @@ export default function DashboardPage() {
               id="dog-select"
               value={selectedDogId}
               onChange={(e) => setSelectedDogId(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "0.9rem 1rem",
-                borderRadius: "14px",
-                border: "1px solid #d1d5db",
-                backgroundColor: "#fff",
-                color: "#111827",
-                marginBottom: "1rem",
-              }}
+              className={styles.select}
             >
               {dogs.length === 0 ? (
                 <option value="">No dogs added yet</option>
@@ -372,62 +297,26 @@ export default function DashboardPage() {
             </select>
 
             {selectedDog ? (
-              <div
-                style={{
-                  padding: "1rem",
-                  borderRadius: "18px",
-                  background:
-                    "linear-gradient(180deg, #faf8f4 0%, #f5f1ea 100%)",
-                  border: "1px solid #e7ddd0",
-                }}
-              >
-                <h2
-                  style={{
-                    marginBottom: "0.4rem",
-                    fontSize: "1.2rem",
-                    color: "#18212f",
-                  }}
-                >
-                  {selectedDog.name}
-                </h2>
-                <p style={{ color: "#5b6472", marginBottom: "0.2rem" }}>
+              <div className={styles.dogCard}>
+                <h2 className={styles.dogName}>{selectedDog.name}</h2>
+                <p className={styles.dogMeta}>
                   Breed: {selectedDog.breed || "Not added"}
                 </p>
-                <p style={{ color: "#5b6472" }}>
+                <p className={styles.dogMeta}>
                   Birthdate: {selectedDog.birthdate || "Not added"}
                 </p>
               </div>
             ) : (
-              <p style={{ color: "#6b7280" }}>Add a dog first to begin.</p>
+              <p className={styles.emptyText}>Add a dog first to begin.</p>
             )}
           </section>
 
-          <section
-            style={{
-              backgroundColor: "#ffffff",
-              border: "1px solid #e5e7eb",
-              borderRadius: "24px",
-              padding: "1.25rem",
-              boxShadow: "0 10px 30px rgba(24, 33, 47, 0.05)",
-            }}
-          >
-            <h2
-              style={{
-                fontSize: "1.1rem",
-                marginBottom: "1rem",
-                color: "#18212f",
-              }}
-            >
-              Quick Log
-            </h2>
+          {/* CARD */}
+          <section className={styles.card}>
+            <h2 className={styles.cardTitle}>Quick Log</h2>
 
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))",
-                gap: "0.75rem",
-              }}
-            >
+            {/* BUTTON GRID */}
+            <div className={styles.buttonGrid}>
               {EVENT_TYPES.map((type) => {
                 const meta = EVENT_META[type];
 
@@ -436,16 +325,11 @@ export default function DashboardPage() {
                     key={type}
                     onClick={() => handleLogEvent(type)}
                     disabled={loadingEvent === type || !selectedDogId}
+                    className={styles.eventBtn}
                     style={{
-                      padding: "0.95rem 1rem",
-                      borderRadius: "16px",
-                      border: `1px solid ${meta.border}`,
                       backgroundColor: meta.bg,
+                      borderColor: meta.border,
                       color: meta.color,
-                      cursor: "pointer",
-                      fontWeight: "bold",
-                      textTransform: "capitalize",
-                      boxShadow: "0 4px 12px rgba(17, 24, 39, 0.04)",
                     }}
                   >
                     {loadingEvent === type
@@ -456,86 +340,43 @@ export default function DashboardPage() {
               })}
             </div>
 
-            {message && (
-              <p
-                style={{
-                  marginTop: "1rem",
-                  color: "#243041",
-                  backgroundColor: "#f8fafc",
-                  border: "1px solid #e5e7eb",
-                  padding: "0.75rem 0.9rem",
-                  borderRadius: "12px",
-                }}
-              >
-                {message}
-              </p>
-            )}
+            {message && <p className={styles.message}>{message}</p>}
           </section>
 
-          <section
-            style={{
-              backgroundColor: "#ffffff",
-              border: "1px solid #e5e7eb",
-              borderRadius: "24px",
-              padding: "1.25rem",
-              boxShadow: "0 10px 30px rgba(24, 33, 47, 0.05)",
-            }}
-          >
-            <h2
-              style={{
-                marginBottom: "1rem",
-                fontSize: "1.1rem",
-                color: "#18212f",
-              }}
-            >
-              Today Summary
-            </h2>
+          {/* CARD */}
+          <section className={styles.card}>
+            <h2 className={styles.cardTitle}>Today Summary</h2>
 
             {!selectedDogId ? (
-              <p style={{ color: "#6b7280" }}>
+              <p className={styles.emptyText}>
                 Add a dog first to see today’s summary.
               </p>
             ) : (
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
-                  gap: "0.75rem",
-                }}
-              >
+              <div className={styles.summaryGrid}>
                 {EVENT_TYPES.map((type) => {
                   const meta = EVENT_META[type];
 
                   return (
                     <div
                       key={type}
+                      className={styles.summaryCard}
                       style={{
-                        border: `1px solid ${meta.border}`,
-                        borderRadius: "18px",
-                        padding: "0.9rem",
+                        borderColor: meta.border,
                         backgroundColor: meta.bg,
                       }}
                     >
-                      <div
-                        style={{ fontSize: "1rem", marginBottom: "0.35rem" }}
-                      >
+                      <div className={styles.summaryLabel}>
                         {meta.icon}{" "}
                         <span
-                          style={{
-                            color: meta.color,
-                            textTransform: "capitalize",
-                            fontWeight: "bold",
-                          }}
+                          className={styles.summaryLabelText}
+                          style={{ color: meta.color }}
                         >
                           {type}
                         </span>
                       </div>
                       <p
-                        style={{
-                          fontSize: "1.5rem",
-                          fontWeight: "bold",
-                          color: meta.color,
-                        }}
+                        className={styles.summaryCount}
+                        style={{ color: meta.color }}
                       >
                         {todaySummary[type]}
                       </p>
@@ -547,190 +388,90 @@ export default function DashboardPage() {
           </section>
         </div>
 
-        <section
-          style={{
-            backgroundColor: "#ffffff",
-            border: "1px solid #e5e7eb",
-            borderRadius: "24px",
-            padding: "1.25rem",
-            boxShadow: "0 10px 30px rgba(24, 33, 47, 0.05)",
-          }}
-        >
-          <h2
-            style={{
-              marginBottom: "1rem",
-              fontSize: "1.2rem",
-              color: "#18212f",
-            }}
-          >
-            Timeline
-          </h2>
+        {/* CARD */}
+        <section className={styles.card}>
+          <h2 className={styles.timelineTitle}>Timeline</h2>
 
           {!selectedDogId ? (
-            <p style={{ color: "#6b7280" }}>
+            <p className={styles.emptyText}>
               Add a dog first to start logging.
             </p>
           ) : groupedByDay.length === 0 ? (
-            <p style={{ color: "#6b7280" }}>No events logged yet.</p>
+            <p className={styles.emptyText}>No events logged yet.</p>
           ) : (
-            <div style={{ display: "grid", gap: "1rem" }}>
+            <div className={styles.timelineList}>
               {groupedByDay.map((dayGroup) => {
                 const isCollapsed = collapsedDates[dayGroup.dateKey];
 
                 return (
-                  <div
-                    key={dayGroup.dateKey}
-                    style={{
-                      border: "1px solid #e5e7eb",
-                      borderRadius: "20px",
-                      overflow: "hidden",
-                      background:
-                        "linear-gradient(180deg, #fff 0%, #fbfbfa 100%)",
-                    }}
-                  >
+                  <div key={dayGroup.dateKey} className={styles.timelineGroup}>
                     <button
                       onClick={() => toggleDate(dayGroup.dateKey)}
-                      style={{
-                        width: "100%",
-                        border: "none",
-                        background: "transparent",
-                        cursor: "pointer",
-                        padding: "1rem",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        gap: "1rem",
-                        textAlign: "left",
-                      }}
+                      className={styles.timelineHeader}
                     >
                       <div>
-                        <h3
-                          style={{
-                            fontSize: "1rem",
-                            color: "#243041",
-                            marginBottom: "0.2rem",
-                          }}
-                        >
+                        <h3 className={styles.timelineDate}>
                           {dayGroup.displayDate}
                         </h3>
-                        <p style={{ color: "#6b7280", fontSize: "0.9rem" }}>
+                        <p className={styles.timelineCount}>
                           {dayGroup.totalLogs} log
                           {dayGroup.totalLogs > 1 ? "s" : ""}
                         </p>
                       </div>
 
                       <span
-                        style={{
-                          fontSize: "1.1rem",
-                          color: "#6b7280",
-                          transform: isCollapsed
-                            ? "rotate(-90deg)"
-                            : "rotate(0deg)",
-                          transition: "transform 0.2s ease",
-                        }}
+                        className={`${styles.timelineArrow} ${
+                          isCollapsed ? styles.timelineArrowCollapsed : ""
+                        }`}
                       >
                         ▾
                       </span>
                     </button>
 
                     {!isCollapsed && (
-                      <div
-                        style={{
-                          padding: "0 1rem 1rem",
-                          display: "grid",
-                          gap: "0.75rem",
-                        }}
-                      >
+                      <div className={styles.timelineContent}>
                         {dayGroup.typeGroups.map((group) => {
                           const meta = EVENT_META[group.type];
 
                           return (
                             <div
                               key={`${dayGroup.dateKey}-${group.type}`}
+                              className={styles.typeCard}
                               style={{
-                                padding: "0.9rem",
-                                borderRadius: "18px",
                                 backgroundColor: meta.bg,
-                                border: `1px solid ${meta.border}`,
+                                borderColor: meta.border,
                               }}
                             >
-                              <div
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  gap: "0.75rem",
-                                  marginBottom: "0.7rem",
-                                }}
-                              >
+                              <div className={styles.typeHeader}>
                                 <div
-                                  style={{
-                                    width: "38px",
-                                    height: "38px",
-                                    borderRadius: "999px",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    backgroundColor: "#fff",
-                                    border: `1px solid ${meta.border}`,
-                                    fontSize: "1rem",
-                                    flexShrink: 0,
-                                  }}
+                                  className={styles.typeIcon}
+                                  style={{ borderColor: meta.border }}
                                 >
                                   {meta.icon}
                                 </div>
 
                                 <div>
                                   <p
-                                    style={{
-                                      fontWeight: "bold",
-                                      color: meta.color,
-                                      textTransform: "capitalize",
-                                      marginBottom: "0.1rem",
-                                    }}
+                                    className={styles.typeName}
+                                    style={{ color: meta.color }}
                                   >
                                     {group.type}
                                   </p>
-                                  <p
-                                    style={{
-                                      color: "#5b6472",
-                                      fontSize: "0.9rem",
-                                    }}
-                                  >
+                                  <p className={styles.typeCount}>
                                     {group.events.length} time
                                     {group.events.length > 1 ? "s" : ""}
                                   </p>
                                 </div>
                               </div>
 
-                              <div
-                                style={{
-                                  display: "flex",
-                                  flexWrap: "wrap",
-                                  gap: "0.55rem",
-                                }}
-                              >
+                              <div className={styles.chipWrap}>
                                 {group.events.map((event) => (
                                   <div
                                     key={event.id}
-                                    style={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                      gap: "0.45rem",
-                                      padding: "0.5rem 0.75rem",
-                                      borderRadius: "999px",
-                                      backgroundColor: "#fff",
-                                      border: `1px solid ${meta.border}`,
-                                      boxShadow:
-                                        "0 2px 6px rgba(17, 24, 39, 0.03)",
-                                    }}
+                                    className={styles.timeChip}
+                                    style={{ borderColor: meta.border }}
                                   >
-                                    <span
-                                      style={{
-                                        fontSize: "0.9rem",
-                                        color: "#374151",
-                                        fontWeight: 500,
-                                      }}
-                                    >
+                                    <span className={styles.timeText}>
                                       {formatTime(event.created_at)}
                                     </span>
 
@@ -739,18 +480,7 @@ export default function DashboardPage() {
                                         handleDeleteEvent(event.id)
                                       }
                                       disabled={deletingEventId === event.id}
-                                      style={{
-                                        border: "none",
-                                        background: "transparent",
-                                        color: "#6b7280",
-                                        cursor: "pointer",
-                                        width: "auto",
-                                        minWidth: "auto",
-                                        minHeight: "auto",
-                                        padding: 0,
-                                        fontSize: "0.95rem",
-                                        lineHeight: 1,
-                                      }}
+                                      className={styles.deleteChipBtn}
                                       title="Delete this log"
                                     >
                                       {deletingEventId === event.id

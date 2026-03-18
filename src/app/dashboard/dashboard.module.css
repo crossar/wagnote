@@ -1,0 +1,304 @@
+.page {
+  padding: 2rem 1rem 3rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  color: #18212f;
+}
+
+/* HERO */
+.hero {
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #fffdf8 0%, #f7f4ee 55%, #f1efe8 100%);
+  border: 1px solid #e9e2d7;
+  box-shadow: 0 10px 30px rgba(24, 33, 47, 0.06);
+}
+
+.heroBadge {
+  display: inline-block;
+  margin-bottom: 0.9rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  color: #6b7280;
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
+.heroTitle {
+  font-size: clamp(2rem, 5vw, 3rem);
+  margin-bottom: 0.4rem;
+  line-height: 1.05;
+}
+
+.heroText {
+  color: #5b6472;
+  max-width: 680px;
+  line-height: 1.65;
+}
+
+/* LAYOUT */
+.grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.sidebar {
+  display: grid;
+  gap: 1.25rem;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* CARD */
+.card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 24px;
+  padding: 1.25rem;
+  box-shadow: 0 10px 30px rgba(24, 33, 47, 0.05);
+}
+
+.cardTitle {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  color: #18212f;
+}
+
+.label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 0.75rem;
+  color: #243041;
+}
+
+.select {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border-radius: 14px;
+  border: 1px solid #d1d5db;
+  background-color: #fff;
+  color: #111827;
+  margin-bottom: 1rem;
+}
+
+.dogCard {
+  padding: 1rem;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #faf8f4 0%, #f5f1ea 100%);
+  border: 1px solid #e7ddd0;
+}
+
+.dogName {
+  margin-bottom: 0.4rem;
+  font-size: 1.2rem;
+  color: #18212f;
+}
+
+.dogMeta {
+  color: #5b6472;
+  margin-bottom: 0.2rem;
+}
+
+.emptyText {
+  color: #6b7280;
+}
+
+.message {
+  margin-top: 1rem;
+  color: #243041;
+  background-color: #f8fafc;
+  border: 1px solid #e5e7eb;
+  padding: 0.75rem 0.9rem;
+  border-radius: 12px;
+}
+
+/* BUTTON GRID */
+.buttonGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 0.75rem;
+}
+
+/* EVENT BUTTON */
+.eventBtn {
+  padding: 0.95rem 1rem;
+  border-radius: 16px;
+  border: 1px solid;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(17, 24, 39, 0.04);
+}
+
+.eventBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* SUMMARY */
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.75rem;
+}
+
+.summaryCard {
+  border: 1px solid;
+  border-radius: 18px;
+  padding: 0.9rem;
+}
+
+.summaryLabel {
+  font-size: 1rem;
+  margin-bottom: 0.35rem;
+}
+
+.summaryLabelText {
+  text-transform: capitalize;
+  font-weight: bold;
+}
+
+.summaryCount {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+/* TIMELINE */
+.timelineTitle {
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  color: #18212f;
+}
+
+.timelineList {
+  display: grid;
+  gap: 1rem;
+}
+
+.timelineGroup {
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  overflow: hidden;
+  background: linear-gradient(180deg, #fff 0%, #fbfbfa 100%);
+}
+
+.timelineHeader {
+  width: 100%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  text-align: left;
+}
+
+.timelineDate {
+  font-size: 1rem;
+  color: #243041;
+  margin-bottom: 0.2rem;
+}
+
+.timelineCount {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.timelineArrow {
+  font-size: 1.1rem;
+  color: #6b7280;
+  transition: transform 0.2s ease;
+}
+
+.timelineArrowCollapsed {
+  transform: rotate(-90deg);
+}
+
+.timelineContent {
+  padding: 0 1rem 1rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.typeCard {
+  padding: 0.9rem;
+  border-radius: 18px;
+  border: 1px solid;
+}
+
+.typeHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.7rem;
+}
+
+.typeIcon {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  border: 1px solid;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.typeName {
+  font-weight: bold;
+  text-transform: capitalize;
+  margin-bottom: 0.1rem;
+}
+
+.typeCount {
+  color: #5b6472;
+  font-size: 0.9rem;
+}
+
+.chipWrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.timeChip {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid;
+  box-shadow: 0 2px 6px rgba(17, 24, 39, 0.03);
+}
+
+.timeText {
+  font-size: 0.9rem;
+  color: #374151;
+  font-weight: 500;
+}
+
+.deleteChipBtn {
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  cursor: pointer;
+  width: auto;
+  min-width: auto;
+  min-height: auto;
+  padding: 0;
+  font-size: 0.95rem;
+  line-height: 1;
+}
