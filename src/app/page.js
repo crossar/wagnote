@@ -1,154 +1,186 @@
 import Link from "next/link";
+import styles from "./home.module.css";
+
+const features = [
+  {
+    title: "Potty Logs",
+    text: "Track pee and poop events quickly so you can spot daily patterns without endless scrolling.",
+    icon: "💧",
+    bg: "#fff8db",
+    border: "#f4d03f",
+  },
+  {
+    title: "Meal Tracking",
+    text: "Keep a simple record of feeding times and daily routines for puppies, adults, or seniors.",
+    icon: "🍖",
+    bg: "#ecfdf3",
+    border: "#86efac",
+  },
+  {
+    title: "Walks & Meds",
+    text: "Log walks, medications, and care tasks in one compact dashboard built for dog owners.",
+    icon: "🐾",
+    bg: "#eff6ff",
+    border: "#93c5fd",
+  },
+];
+
+const previewEvents = [
+  {
+    type: "Pee",
+    time: "8:12 AM",
+    icon: "💧",
+    bg: "#fff8db",
+    border: "#f4d03f",
+    color: "#9a6700",
+  },
+  {
+    type: "Meal",
+    time: "9:00 AM",
+    icon: "🍖",
+    bg: "#ecfdf3",
+    border: "#86efac",
+    color: "#166534",
+  },
+  {
+    type: "Walk",
+    time: "12:30 PM",
+    icon: "🐾",
+    bg: "#eff6ff",
+    border: "#93c5fd",
+    color: "#1d4ed8",
+  },
+  {
+    type: "Medication",
+    time: "6:45 PM",
+    icon: "💊",
+    bg: "#f5f3ff",
+    border: "#c4b5fd",
+    color: "#6d28d9",
+  },
+];
 
 export default function HomePage() {
   return (
-    <main
-      style={{
-        minHeight: "100vh",
-        padding: "3rem 1.5rem",
-        fontFamily: "Arial, sans-serif",
-        backgroundColor: "#f7f4ee",
-        color: "#1f2937",
-      }}
-    >
-      <div
-        style={{
-          maxWidth: "900px",
-          margin: "0 auto",
-          textAlign: "center",
-        }}
-      >
-        <p
-          style={{
-            display: "inline-block",
-            marginBottom: "1rem",
-            padding: "0.4rem 0.8rem",
-            borderRadius: "999px",
-            backgroundColor: "#fff",
-            border: "1px solid #e5e7eb",
-            fontSize: "0.9rem",
-          }}
-        >
+    <main className={styles.page}>
+      {/* HERO */}
+      <section className={styles.hero}>
+        <p className={styles.heroBadge}>
           🐶 Simple daily tracking for dog owners
         </p>
 
-        <h1
-          style={{
-            fontSize: "3rem",
-            lineHeight: "1.1",
-            marginBottom: "1rem",
-          }}
-        >
-          WagNote
-        </h1>
+        <h1 className={styles.heroTitle}>WagNote</h1>
 
-        <p
-          style={{
-            fontSize: "1.1rem",
-            lineHeight: "1.7",
-            maxWidth: "650px",
-            margin: "0 auto 2rem",
-            color: "#4b5563",
-          }}
-        >
+        <p className={styles.heroText}>
           Track potty breaks, meals, walks, and medications in one simple place.
-          Built for busy dog owners who just want a clear daily log.
+          Built for busy dog owners who want a clean, useful daily log.
         </p>
 
-        <div
-          style={{
-            display: "flex",
-            gap: "1rem",
-            justifyContent: "center",
-            flexWrap: "wrap",
-            marginBottom: "3rem",
-          }}
-        >
-          <Link
-            href="/dogs"
-            style={{
-              padding: "0.9rem 1.4rem",
-              borderRadius: "12px",
-              border: "none",
-              backgroundColor: "#111827",
-              color: "#fff",
-              fontSize: "1rem",
-              cursor: "pointer",
-              textDecoration: "none",
-            }}
-          >
+        <div className={styles.heroActions}>
+          <Link href="/dogs" className={styles.primaryBtn}>
             Get Started
           </Link>
 
-          <Link
-            href="/dashboard"
-            style={{
-              padding: "0.9rem 1.4rem",
-              borderRadius: "12px",
-              border: "1px solid #d1d5db",
-              backgroundColor: "#fff",
-              color: "#111827",
-              fontSize: "1rem",
-              cursor: "pointer",
-              textDecoration: "none",
-            }}
-          >
+          <Link href="/dashboard" className={styles.secondaryBtn}>
             Open Dashboard
           </Link>
         </div>
+      </section>
 
-        <section
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-            gap: "1rem",
-            textAlign: "left",
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: "#fff",
-              padding: "1.25rem",
-              borderRadius: "16px",
-              border: "1px solid #e5e7eb",
-            }}
-          >
-            <h2 style={{ marginBottom: "0.5rem" }}>Potty Logs</h2>
-            <p style={{ color: "#6b7280", lineHeight: "1.6" }}>
-              Log pee and poop events quickly so you can spot daily patterns.
+      {/* FEATURE GRID */}
+      <section className={styles.featureGrid}>
+        {features.map((feature) => (
+          <div key={feature.title} className={styles.featureCard}>
+            <div
+              className={styles.featureIcon}
+              style={{
+                backgroundColor: feature.bg,
+                border: `1px solid ${feature.border}`,
+              }}
+            >
+              {feature.icon}
+            </div>
+
+            <h2 className={styles.featureTitle}>{feature.title}</h2>
+            <p className={styles.featureText}>{feature.text}</p>
+          </div>
+        ))}
+      </section>
+
+      {/* PREVIEW */}
+      <section className={styles.previewCard}>
+        <div className={styles.previewHeader}>
+          <div>
+            <h2 className={styles.previewTitle}>
+              A cleaner dog routine dashboard
+            </h2>
+            <p className={styles.previewSubtext}>
+              Compact logs, quick actions, and a timeline you can actually read.
             </p>
           </div>
+        </div>
 
-          <div
-            style={{
-              backgroundColor: "#fff",
-              padding: "1.25rem",
-              borderRadius: "16px",
-              border: "1px solid #e5e7eb",
-            }}
-          >
-            <h2 style={{ marginBottom: "0.5rem" }}>Meal Tracking</h2>
-            <p style={{ color: "#6b7280", lineHeight: "1.6" }}>
-              Keep a simple record of feeding times and notes.
-            </p>
+        <div className={styles.previewGrid}>
+          <div className={styles.previewPanel}>
+            <h3 className={styles.previewDogName}>Mochi</h3>
+            <p className={styles.previewDogMeta}>Breed: Dachshund</p>
+            <p className={styles.previewDogMeta}>Birthdate: 2026-03-01</p>
+
+            <div className={styles.previewQuickGrid}>
+              <div className={styles.previewQuickCard}>
+                <p className={styles.previewQuickLabel}>Today’s Pee</p>
+                <p className={styles.previewQuickValue}>3 logs</p>
+              </div>
+              <div className={styles.previewQuickCard}>
+                <p className={styles.previewQuickLabel}>Meals</p>
+                <p className={styles.previewQuickValue}>2 logs</p>
+              </div>
+              <div className={styles.previewQuickCard}>
+                <p className={styles.previewQuickLabel}>Walks</p>
+                <p className={styles.previewQuickValue}>1 log</p>
+              </div>
+              <div className={styles.previewQuickCard}>
+                <p className={styles.previewQuickLabel}>Meds</p>
+                <p className={styles.previewQuickValue}>1 log</p>
+              </div>
+            </div>
           </div>
 
-          <div
-            style={{
-              backgroundColor: "#fff",
-              padding: "1.25rem",
-              borderRadius: "16px",
-              border: "1px solid #e5e7eb",
-            }}
-          >
-            <h2 style={{ marginBottom: "0.5rem" }}>Walks & Meds</h2>
-            <p style={{ color: "#6b7280", lineHeight: "1.6" }}>
-              Track walks, medications, and daily care without spreadsheet
-              goblins.
-            </p>
+          <div className={styles.timelineWrap}>
+            {previewEvents.map((event) => (
+              <div
+                key={`${event.type}-${event.time}`}
+                className={styles.timelineRow}
+                style={{
+                  backgroundColor: event.bg,
+                  borderColor: event.border,
+                }}
+              >
+                <div className={styles.timelineLeft}>
+                  <div
+                    className={styles.timelineIcon}
+                    style={{ border: `1px solid ${event.border}` }}
+                  >
+                    {event.icon}
+                  </div>
+
+                  <div>
+                    <p
+                      className={styles.timelineLabel}
+                      style={{ color: event.color }}
+                    >
+                      {event.type}
+                    </p>
+                    <p className={styles.timelineMeta}>Logged in WagNote</p>
+                  </div>
+                </div>
+
+                <p className={styles.timelineTime}>{event.time}</p>
+              </div>
+            ))}
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
     </main>
   );
 }
