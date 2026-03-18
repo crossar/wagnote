@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import styles from "./dogs.module.css";
 
 export default function DogsPage() {
   const [name, setName] = useState("");
@@ -84,150 +85,99 @@ export default function DogsPage() {
   }
 
   return (
-    <main
-      style={{
-        padding: "2rem",
-        fontFamily: "Arial, sans-serif",
-        maxWidth: "800px",
-        margin: "0 auto",
-        color: "#111827",
-      }}
-    >
-      <h1 style={{ marginBottom: "0.5rem" }}>Dogs</h1>
-      <p style={{ marginBottom: "1rem", color: "#4b5563" }}>
-        Add your dogs to WagNote.
-      </p>
-
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          display: "grid",
-          gap: "1rem",
-          marginTop: "1.5rem",
-          marginBottom: "2rem",
-          padding: "1.25rem",
-          border: "1px solid #ddd",
-          borderRadius: "12px",
-          backgroundColor: "#fafafa",
-        }}
-      >
-        <input
-          type="text"
-          placeholder="Dog name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-          style={{
-            padding: "0.8rem",
-            borderRadius: "8px",
-            border: "1px solid #ccc",
-            backgroundColor: "#fff",
-            color: "#111827",
-          }}
-        />
-
-        <input
-          type="text"
-          placeholder="Breed"
-          value={breed}
-          onChange={(e) => setBreed(e.target.value)}
-          style={{
-            padding: "0.8rem",
-            borderRadius: "8px",
-            border: "1px solid #ccc",
-            backgroundColor: "#fff",
-            color: "#111827",
-          }}
-        />
-
-        <input
-          type="date"
-          value={birthdate}
-          onChange={(e) => setBirthdate(e.target.value)}
-          style={{
-            padding: "0.8rem",
-            borderRadius: "8px",
-            border: "1px solid #ccc",
-            backgroundColor: "#fff",
-            color: "#111827",
-          }}
-        />
-
-        <button
-          type="submit"
-          disabled={loading}
-          style={{
-            padding: "0.9rem 1rem",
-            borderRadius: "10px",
-            border: "none",
-            backgroundColor: "#111827",
-            color: "#fff",
-            cursor: "pointer",
-          }}
-        >
-          {loading ? "Adding..." : "Add Dog"}
-        </button>
-
-        {message && (
-          <p style={{ color: "#111827", marginTop: "0.25rem" }}>{message}</p>
-        )}
-      </form>
-
-      <section>
-        <h2 style={{ marginBottom: "1rem" }}>Your Dogs</h2>
-
-        {dogs.length === 0 ? (
-          <p style={{ color: "#4b5563" }}>No dogs added yet.</p>
-        ) : (
-          <div style={{ display: "grid", gap: "1rem", marginTop: "1rem" }}>
-            {dogs.map((dog) => (
-              <div
-                key={dog.id}
-                style={{
-                  border: "1px solid #ddd",
-                  borderRadius: "12px",
-                  padding: "1rem",
-                  backgroundColor: "#fff",
-                  color: "#111827",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "flex-start",
-                    gap: "1rem",
-                    flexWrap: "wrap",
-                  }}
-                >
-                  <div>
-                    <h3 style={{ marginBottom: "0.5rem" }}>{dog.name}</h3>
-                    <p>Breed: {dog.breed || "Not added"}</p>
-                    <p>Birthdate: {dog.birthdate || "Not added"}</p>
-                  </div>
-
-                  <button
-                    onClick={() => handleDeleteDog(dog.id, dog.name)}
-                    disabled={deletingDogId === dog.id}
-                    style={{
-                      padding: "0.65rem 0.9rem",
-                      borderRadius: "10px",
-                      border: "1px solid #d1d5db",
-                      backgroundColor: "#fff",
-                      color: "#111827",
-                      cursor: "pointer",
-                      width: "auto",
-                      minWidth: "110px",
-                    }}
-                  >
-                    {deletingDogId === dog.id ? "Deleting..." : "Delete"}
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+    <main className={styles.page}>
+      {/* HERO */}
+      <section className={styles.hero}>
+        <p className={styles.heroBadge}>Dog Profiles</p>
+        <h1 className={styles.heroTitle}>Dogs</h1>
+        <p className={styles.heroText}>
+          Add your dogs, keep their basic info handy, and manage the profiles
+          that power your WagNote dashboard.
+        </p>
       </section>
+
+      {/* LAYOUT */}
+      <div className={styles.grid}>
+        {/* CARD */}
+        <section className={styles.card}>
+          <h2 className={styles.cardTitle}>Add a Dog</h2>
+          <p className={styles.cardText}>
+            Create a dog profile to start logging activities.
+          </p>
+
+          {/* FORM */}
+          <form onSubmit={handleSubmit} className={styles.form}>
+            <input
+              type="text"
+              placeholder="Dog name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              className={styles.input}
+            />
+
+            <input
+              type="text"
+              placeholder="Breed"
+              value={breed}
+              onChange={(e) => setBreed(e.target.value)}
+              className={styles.input}
+            />
+
+            <input
+              type="date"
+              value={birthdate}
+              onChange={(e) => setBirthdate(e.target.value)}
+              className={styles.input}
+            />
+
+            <button
+              type="submit"
+              disabled={loading}
+              className={styles.submitBtn}
+            >
+              {loading ? "Adding..." : "Add Dog"}
+            </button>
+
+            {message && <p className={styles.message}>{message}</p>}
+          </form>
+        </section>
+
+        {/* CARD */}
+        <section className={styles.card}>
+          <h2 className={styles.sectionTitle}>Your Dogs</h2>
+
+          {dogs.length === 0 ? (
+            <p className={styles.emptyText}>No dogs added yet.</p>
+          ) : (
+            <div className={styles.list}>
+              {dogs.map((dog) => (
+                <div key={dog.id} className={styles.dogCard}>
+                  <div className={styles.dogRow}>
+                    <div className={styles.dogInfo}>
+                      <h3 className={styles.dogName}>{dog.name}</h3>
+                      <p className={styles.dogMeta}>
+                        Breed: {dog.breed || "Not added"}
+                      </p>
+                      <p className={styles.dogMeta}>
+                        Birthdate: {dog.birthdate || "Not added"}
+                      </p>
+                    </div>
+
+                    <button
+                      onClick={() => handleDeleteDog(dog.id, dog.name)}
+                      disabled={deletingDogId === dog.id}
+                      className={styles.deleteBtn}
+                    >
+                      {deletingDogId === dog.id ? "Deleting..." : "Delete"}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
     </main>
   );
 }

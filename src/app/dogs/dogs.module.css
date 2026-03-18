@@ -1,0 +1,181 @@
+.page {
+  padding: 2rem 1rem 3rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  color: #18212f;
+}
+
+/* HERO */
+.hero {
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #fffdf8 0%, #f7f4ee 55%, #f1efe8 100%);
+  border: 1px solid #e9e2d7;
+  box-shadow: 0 10px 30px rgba(24, 33, 47, 0.06);
+}
+
+.heroBadge {
+  display: inline-block;
+  margin-bottom: 0.9rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  color: #6b7280;
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
+.heroTitle {
+  font-size: clamp(2rem, 5vw, 3rem);
+  margin-bottom: 0.4rem;
+  line-height: 1.05;
+}
+
+.heroText {
+  color: #5b6472;
+  max-width: 680px;
+  line-height: 1.65;
+}
+
+/* LAYOUT */
+.grid {
+  display: grid;
+  grid-template-columns: minmax(320px, 380px) minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* CARD */
+.card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 24px;
+  padding: 1.25rem;
+  box-shadow: 0 10px 30px rgba(24, 33, 47, 0.05);
+}
+
+.cardTitle {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  color: #18212f;
+}
+
+.cardText {
+  color: #5b6472;
+  margin-bottom: 1rem;
+}
+
+/* FORM */
+.form {
+  display: grid;
+  gap: 1rem;
+}
+
+.input {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border-radius: 14px;
+  border: 1px solid #d1d5db;
+  background-color: #fff;
+  color: #111827;
+  outline: none;
+}
+
+.input:focus {
+  border-color: #b7c2d0;
+  box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.15);
+}
+
+.submitBtn {
+  padding: 0.95rem 1rem;
+  border-radius: 16px;
+  border: 1px solid #111827;
+  background-color: #111827;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(17, 24, 39, 0.08);
+}
+
+.submitBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.message {
+  color: #243041;
+  background-color: #f8fafc;
+  border: 1px solid #e5e7eb;
+  padding: 0.75rem 0.9rem;
+  border-radius: 12px;
+}
+
+/* DOG LIST */
+.sectionTitle {
+  font-size: 1.2rem;
+  color: #18212f;
+  margin-bottom: 1rem;
+}
+
+.emptyText {
+  color: #6b7280;
+}
+
+.list {
+  display: grid;
+  gap: 1rem;
+}
+
+.dogCard {
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  padding: 1rem;
+  background: linear-gradient(180deg, #fff 0%, #fbfbfa 100%);
+}
+
+.dogRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.dogInfo {
+  min-width: 0;
+}
+
+.dogName {
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  color: #18212f;
+}
+
+.dogMeta {
+  color: #5b6472;
+  margin-bottom: 0.25rem;
+}
+
+.deleteBtn {
+  padding: 0.7rem 0.95rem;
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  background-color: #fff;
+  color: #111827;
+  cursor: pointer;
+  min-width: 110px;
+  font-weight: 600;
+}
+
+.deleteBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
