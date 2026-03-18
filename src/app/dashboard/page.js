@@ -5,6 +5,39 @@ import { supabase } from "@/lib/supabase";
 
 const EVENT_TYPES = ["pee", "poop", "meal", "walk", "medication"];
 
+const EVENT_META = {
+  pee: {
+    icon: "💧",
+    color: "#f59e0b",
+    bg: "#fffbeb",
+    border: "#fcd34d",
+  },
+  poop: {
+    icon: "💩",
+    color: "#92400e",
+    bg: "#fef3c7",
+    border: "#fbbf24",
+  },
+  meal: {
+    icon: "🍖",
+    color: "#166534",
+    bg: "#ecfdf5",
+    border: "#86efac",
+  },
+  walk: {
+    icon: "🐾",
+    color: "#1d4ed8",
+    bg: "#eff6ff",
+    border: "#93c5fd",
+  },
+  medication: {
+    icon: "💊",
+    color: "#7c3aed",
+    bg: "#f5f3ff",
+    border: "#c4b5fd",
+  },
+};
+
 export default function DashboardPage() {
   const [dogs, setDogs] = useState([]);
   const [selectedDogId, setSelectedDogId] = useState("");
@@ -110,10 +143,6 @@ export default function DashboardPage() {
     setDeletingEventId("");
   }
 
-  function formatDateTime(value) {
-    return new Date(value).toLocaleString();
-  }
-
   function formatTime(value) {
     return new Date(value).toLocaleTimeString([], {
       hour: "numeric",
@@ -124,15 +153,27 @@ export default function DashboardPage() {
   function formatDisplayDate(value) {
     const eventDate = new Date(value);
     const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
 
-    const isSameDay =
+    const sameDay =
       eventDate.getFullYear() === today.getFullYear() &&
       eventDate.getMonth() === today.getMonth() &&
       eventDate.getDate() === today.getDate();
 
-    if (isSameDay) return "Today";
+    const sameYesterday =
+      eventDate.getFullYear() === yesterday.getFullYear() &&
+      eventDate.getMonth() === yesterday.getMonth() &&
+      eventDate.getDate() === yesterday.getDate();
 
-    return eventDate.toLocaleDateString();
+    if (sameDay) return "Today";
+    if (sameYesterday) return "Yesterday";
+
+    return eventDate.toLocaleDateString([], {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
   }
 
   function getDateKey(value) {
@@ -140,7 +181,6 @@ export default function DashboardPage() {
     const year = eventDate.getFullYear();
     const month = String(eventDate.getMonth() + 1).padStart(2, "0");
     const day = String(eventDate.getDate()).padStart(2, "0");
-
     return `${year}-${month}-${day}`;
   }
 
@@ -175,24 +215,21 @@ export default function DashboardPage() {
     return summary;
   }, [events]);
 
-  const groupedEvents = useMemo(() => {
+  const groupedByDay = useMemo(() => {
     const groups = {};
 
     events.forEach((event) => {
       const dateKey = getDateKey(event.created_at);
-      const groupKey = `${dateKey}-${event.type}`;
 
-      if (!groups[groupKey]) {
-        groups[groupKey] = {
-          id: groupKey,
-          type: event.type,
+      if (!groups[dateKey]) {
+        groups[dateKey] = {
           dateKey,
           displayDate: formatDisplayDate(event.created_at),
           events: [],
         };
       }
 
-      groups[groupKey].events.push(event);
+      groups[dateKey].events.push(event);
     });
 
     return Object.values(groups);
@@ -202,13 +239,12 @@ export default function DashboardPage() {
     <main
       style={{
         padding: "2rem",
-        fontFamily: "Arial, sans-serif",
         maxWidth: "900px",
         margin: "0 auto",
         color: "#111827",
       }}
     >
-      <h1 style={{ marginBottom: "0.5rem" }}>Dashboard</h1>
+      <h1 style={{ marginBottom: "0.5rem", fontSize: "2rem" }}>Dashboard</h1>
       <p style={{ color: "#4b5563", marginBottom: "1.5rem" }}>
         Quickly log your dog’s daily activities.
       </p>
@@ -219,7 +255,7 @@ export default function DashboardPage() {
           border: "1px solid #ddd",
           borderRadius: "16px",
           padding: "1.25rem",
-          marginBottom: "2rem",
+          marginBottom: "1.5rem",
         }}
       >
         <label
@@ -268,9 +304,15 @@ export default function DashboardPage() {
               marginBottom: "1rem",
             }}
           >
-            <h2 style={{ marginBottom: "0.5rem" }}>{selectedDog.name}</h2>
-            <p>Breed: {selectedDog.breed || "Not added"}</p>
-            <p>Birthdate: {selectedDog.birthdate || "Not added"}</p>
+            <h2 style={{ marginBottom: "0.35rem", fontSize: "1.2rem" }}>
+              {selectedDog.name}
+            </h2>
+            <p style={{ color: "#4b5563" }}>
+              Breed: {selectedDog.breed || "Not added"}
+            </p>
+            <p style={{ color: "#4b5563" }}>
+              Birthdate: {selectedDog.birthdate || "Not added"}
+            </p>
           </div>
         )}
 
@@ -281,24 +323,29 @@ export default function DashboardPage() {
             gap: "0.75rem",
           }}
         >
-          {EVENT_TYPES.map((type) => (
-            <button
-              key={type}
-              onClick={() => handleLogEvent(type)}
-              disabled={loadingEvent === type || !selectedDogId}
-              style={{
-                padding: "0.95rem 1rem",
-                borderRadius: "12px",
-                border: "none",
-                backgroundColor: "#111827",
-                color: "#fff",
-                cursor: "pointer",
-                textTransform: "capitalize",
-              }}
-            >
-              {loadingEvent === type ? "Logging..." : type}
-            </button>
-          ))}
+          {EVENT_TYPES.map((type) => {
+            const meta = EVENT_META[type];
+
+            return (
+              <button
+                key={type}
+                onClick={() => handleLogEvent(type)}
+                disabled={loadingEvent === type || !selectedDogId}
+                style={{
+                  padding: "0.95rem 1rem",
+                  borderRadius: "12px",
+                  border: `1px solid ${meta.border}`,
+                  backgroundColor: meta.bg,
+                  color: meta.color,
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                  textTransform: "capitalize",
+                }}
+              >
+                {loadingEvent === type ? "Logging..." : `${meta.icon} ${type}`}
+              </button>
+            );
+          })}
         </div>
 
         {message && (
@@ -312,10 +359,12 @@ export default function DashboardPage() {
           border: "1px solid #ddd",
           borderRadius: "16px",
           padding: "1.25rem",
-          marginBottom: "2rem",
+          marginBottom: "1.5rem",
         }}
       >
-        <h2 style={{ marginBottom: "1rem" }}>Today Summary</h2>
+        <h2 style={{ marginBottom: "1rem", fontSize: "1.25rem" }}>
+          Today Summary
+        </h2>
 
         {!selectedDogId ? (
           <p style={{ color: "#4b5563" }}>
@@ -325,131 +374,160 @@ export default function DashboardPage() {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+              gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
               gap: "0.75rem",
             }}
           >
-            {EVENT_TYPES.map((type) => (
-              <div
-                key={type}
-                style={{
-                  border: "1px solid #e5e7eb",
-                  borderRadius: "12px",
-                  padding: "1rem",
-                  backgroundColor: "#f9fafb",
-                }}
-              >
-                <h3
+            {EVENT_TYPES.map((type) => {
+              const meta = EVENT_META[type];
+
+              return (
+                <div
+                  key={type}
                   style={{
-                    marginBottom: "0.35rem",
-                    textTransform: "capitalize",
-                    fontSize: "1rem",
+                    border: `1px solid ${meta.border}`,
+                    borderRadius: "12px",
+                    padding: "0.9rem",
+                    backgroundColor: meta.bg,
                   }}
                 >
-                  {type}
-                </h3>
-                <p style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
-                  {todaySummary[type]}
-                </p>
-              </div>
-            ))}
+                  <div style={{ fontSize: "1rem", marginBottom: "0.3rem" }}>
+                    {meta.icon}{" "}
+                    <span
+                      style={{ color: meta.color, textTransform: "capitalize" }}
+                    >
+                      {type}
+                    </span>
+                  </div>
+                  <p
+                    style={{
+                      fontSize: "1.4rem",
+                      fontWeight: "bold",
+                      color: meta.color,
+                    }}
+                  >
+                    {todaySummary[type]}
+                  </p>
+                </div>
+              );
+            })}
           </div>
         )}
       </section>
 
       <section>
-        <h2 style={{ marginBottom: "1rem" }}>Recent Events</h2>
+        <h2 style={{ marginBottom: "1rem", fontSize: "1.25rem" }}>Timeline</h2>
 
         {!selectedDogId ? (
           <p style={{ color: "#4b5563" }}>Add a dog first to start logging.</p>
-        ) : groupedEvents.length === 0 ? (
+        ) : groupedByDay.length === 0 ? (
           <p style={{ color: "#4b5563" }}>No events logged yet.</p>
         ) : (
           <div style={{ display: "grid", gap: "1rem" }}>
-            {groupedEvents.map((group) => (
+            {groupedByDay.map((dayGroup) => (
               <div
-                key={group.id}
+                key={dayGroup.dateKey}
                 style={{
-                  border: "1px solid #ddd",
-                  borderRadius: "12px",
-                  padding: "1rem",
                   backgroundColor: "#fff",
-                  color: "#111827",
+                  border: "1px solid #ddd",
+                  borderRadius: "16px",
+                  padding: "1rem",
                 }}
               >
-                <div
+                <h3
                   style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    gap: "1rem",
-                    flexWrap: "wrap",
-                    marginBottom: "0.75rem",
+                    marginBottom: "0.85rem",
+                    fontSize: "1rem",
+                    color: "#4b5563",
                   }}
                 >
-                  <div>
-                    <h3
-                      style={{
-                        marginBottom: "0.2rem",
-                        textTransform: "capitalize",
-                      }}
-                    >
-                      {group.type}
-                    </h3>
-                    <p style={{ color: "#4b5563" }}>{group.displayDate}</p>
-                  </div>
+                  {dayGroup.displayDate}
+                </h3>
 
-                  <p style={{ color: "#4b5563", fontSize: "0.95rem" }}>
-                    {group.events.length} log
-                    {group.events.length > 1 ? "s" : ""}
-                  </p>
-                </div>
+                <div style={{ display: "grid", gap: "0.6rem" }}>
+                  {dayGroup.events.map((event) => {
+                    const meta = EVENT_META[event.type];
 
-                <div
-                  style={{
-                    display: "flex",
-                    flexWrap: "wrap",
-                    gap: "0.6rem",
-                  }}
-                >
-                  {group.events.map((event) => (
-                    <div
-                      key={event.id}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "0.45rem",
-                        padding: "0.55rem 0.7rem",
-                        borderRadius: "999px",
-                        border: "1px solid #d1d5db",
-                        backgroundColor: "#f9fafb",
-                      }}
-                    >
-                      <span style={{ fontSize: "0.95rem" }}>
-                        {formatTime(event.created_at)}
-                      </span>
-
-                      <button
-                        onClick={() => handleDeleteEvent(event.id)}
-                        disabled={deletingEventId === event.id}
+                    return (
+                      <div
+                        key={event.id}
                         style={{
-                          border: "none",
-                          background: "transparent",
-                          color: "#6b7280",
-                          cursor: "pointer",
-                          width: "auto",
-                          minWidth: "auto",
-                          minHeight: "auto",
-                          padding: 0,
-                          fontSize: "0.95rem",
-                          lineHeight: 1,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          gap: "0.75rem",
+                          padding: "0.8rem 0.9rem",
+                          borderRadius: "12px",
+                          backgroundColor: meta.bg,
+                          border: `1px solid ${meta.border}`,
                         }}
-                        title="Delete this log"
                       >
-                        {deletingEventId === event.id ? "..." : "×"}
-                      </button>
-                    </div>
-                  ))}
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "0.75rem",
+                            minWidth: 0,
+                          }}
+                        >
+                          <div
+                            style={{
+                              width: "36px",
+                              height: "36px",
+                              borderRadius: "999px",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              backgroundColor: "#fff",
+                              border: `1px solid ${meta.border}`,
+                              fontSize: "1rem",
+                              flexShrink: 0,
+                            }}
+                          >
+                            {meta.icon}
+                          </div>
+
+                          <div style={{ minWidth: 0 }}>
+                            <p
+                              style={{
+                                fontWeight: "bold",
+                                color: meta.color,
+                                textTransform: "capitalize",
+                                marginBottom: "0.1rem",
+                              }}
+                            >
+                              {event.type}
+                            </p>
+                            <p
+                              style={{ color: "#4b5563", fontSize: "0.95rem" }}
+                            >
+                              {formatTime(event.created_at)}
+                            </p>
+                          </div>
+                        </div>
+
+                        <button
+                          onClick={() => handleDeleteEvent(event.id)}
+                          disabled={deletingEventId === event.id}
+                          style={{
+                            border: "none",
+                            backgroundColor: "#fff",
+                            color: "#6b7280",
+                            cursor: "pointer",
+                            width: "40px",
+                            minWidth: "40px",
+                            minHeight: "40px",
+                            borderRadius: "10px",
+                            fontSize: "1rem",
+                            flexShrink: 0,
+                          }}
+                          title="Delete this log"
+                        >
+                          {deletingEventId === event.id ? "..." : "✕"}
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             ))}
