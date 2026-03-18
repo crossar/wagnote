@@ -103,6 +103,12 @@ main {
   padding-right: 1rem;
 }
 
+@media (max-width: 900px) {
+  main > div {
+    grid-template-columns: 1fr !important;
+  }
+}
+
 @media (max-width: 640px) {
   body {
     line-height: 1.6;

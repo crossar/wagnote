@@ -8,20 +8,20 @@ const EVENT_TYPES = ["pee", "poop", "meal", "walk", "medication"];
 const EVENT_META = {
   pee: {
     icon: "💧",
-    color: "#f59e0b",
-    bg: "#fffbeb",
-    border: "#fcd34d",
+    color: "#9a6700",
+    bg: "#fff8db",
+    border: "#f4d03f",
   },
   poop: {
     icon: "💩",
-    color: "#92400e",
-    bg: "#fef3c7",
-    border: "#fbbf24",
+    color: "#8a4b14",
+    bg: "#fff1e6",
+    border: "#f2b880",
   },
   meal: {
     icon: "🍖",
     color: "#166534",
-    bg: "#ecfdf5",
+    bg: "#ecfdf3",
     border: "#86efac",
   },
   walk: {
@@ -32,7 +32,7 @@ const EVENT_META = {
   },
   medication: {
     icon: "💊",
-    color: "#7c3aed",
+    color: "#6d28d9",
     bg: "#f5f3ff",
     border: "#c4b5fd",
   },
@@ -45,6 +45,7 @@ export default function DashboardPage() {
   const [message, setMessage] = useState("");
   const [loadingEvent, setLoadingEvent] = useState("");
   const [deletingEventId, setDeletingEventId] = useState("");
+  const [collapsedDates, setCollapsedDates] = useState({});
 
   async function fetchDogs() {
     const { data, error } = await supabase
@@ -195,6 +196,13 @@ export default function DashboardPage() {
     );
   }
 
+  function toggleDate(dateKey) {
+    setCollapsedDates((prev) => ({
+      ...prev,
+      [dateKey]: !prev[dateKey],
+    }));
+  }
+
   const selectedDog = dogs.find((dog) => dog.id === selectedDogId);
 
   const todaySummary = useMemo(() => {
@@ -241,6 +249,10 @@ export default function DashboardPage() {
 
     return Object.values(dayGroups).map((dayGroup) => ({
       ...dayGroup,
+      totalLogs: Object.values(dayGroup.typeGroups).reduce(
+        (sum, group) => sum + group.events.length,
+        0,
+      ),
       typeGroups: Object.values(dayGroup.typeGroups),
     }));
   }, [events]);
@@ -248,326 +260,518 @@ export default function DashboardPage() {
   return (
     <main
       style={{
-        padding: "2rem",
-        maxWidth: "900px",
+        padding: "2rem 1rem 3rem",
+        maxWidth: "1100px",
         margin: "0 auto",
-        color: "#111827",
+        color: "#18212f",
       }}
     >
-      <h1 style={{ marginBottom: "0.5rem", fontSize: "2rem" }}>Dashboard</h1>
-      <p style={{ color: "#4b5563", marginBottom: "1.5rem" }}>
-        Quickly log your dog’s daily activities.
-      </p>
-
       <section
         style={{
-          backgroundColor: "#fff",
-          border: "1px solid #ddd",
-          borderRadius: "16px",
-          padding: "1.25rem",
           marginBottom: "1.5rem",
+          padding: "1.5rem",
+          borderRadius: "24px",
+          background:
+            "linear-gradient(135deg, #fffdf8 0%, #f7f4ee 55%, #f1efe8 100%)",
+          border: "1px solid #e9e2d7",
+          boxShadow: "0 10px 30px rgba(24, 33, 47, 0.06)",
         }}
       >
-        <label
-          htmlFor="dog-select"
+        <p
           style={{
-            display: "block",
+            display: "inline-block",
+            marginBottom: "0.9rem",
+            padding: "0.35rem 0.7rem",
+            borderRadius: "999px",
+            backgroundColor: "#ffffff",
+            border: "1px solid #e5e7eb",
+            color: "#6b7280",
+            fontSize: "0.85rem",
             fontWeight: "bold",
-            marginBottom: "0.75rem",
           }}
         >
-          Select Dog
-        </label>
+          Daily Dog Activity Tracker
+        </p>
 
-        <select
-          id="dog-select"
-          value={selectedDogId}
-          onChange={(e) => setSelectedDogId(e.target.value)}
+        <h1
           style={{
-            width: "100%",
-            padding: "0.85rem",
-            borderRadius: "10px",
-            border: "1px solid #ccc",
-            backgroundColor: "#fff",
-            color: "#111827",
-            marginBottom: "1rem",
+            fontSize: "clamp(2rem, 5vw, 3rem)",
+            marginBottom: "0.4rem",
+            lineHeight: 1.05,
           }}
         >
-          {dogs.length === 0 ? (
-            <option value="">No dogs added yet</option>
-          ) : (
-            dogs.map((dog) => (
-              <option key={dog.id} value={dog.id}>
-                {dog.name}
-              </option>
-            ))
-          )}
-        </select>
+          Dashboard
+        </h1>
 
-        {selectedDog && (
-          <div
-            style={{
-              padding: "1rem",
-              borderRadius: "12px",
-              backgroundColor: "#f9fafb",
-              border: "1px solid #e5e7eb",
-              marginBottom: "1rem",
-            }}
-          >
-            <h2 style={{ marginBottom: "0.35rem", fontSize: "1.2rem" }}>
-              {selectedDog.name}
-            </h2>
-            <p style={{ color: "#4b5563" }}>
-              Breed: {selectedDog.breed || "Not added"}
-            </p>
-            <p style={{ color: "#4b5563" }}>
-              Birthdate: {selectedDog.birthdate || "Not added"}
-            </p>
-          </div>
-        )}
-
-        <div
+        <p
           style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))",
-            gap: "0.75rem",
+            color: "#5b6472",
+            fontSize: "1rem",
+            maxWidth: "680px",
+            lineHeight: 1.65,
           }}
         >
-          {EVENT_TYPES.map((type) => {
-            const meta = EVENT_META[type];
-
-            return (
-              <button
-                key={type}
-                onClick={() => handleLogEvent(type)}
-                disabled={loadingEvent === type || !selectedDogId}
-                style={{
-                  padding: "0.95rem 1rem",
-                  borderRadius: "12px",
-                  border: `1px solid ${meta.border}`,
-                  backgroundColor: meta.bg,
-                  color: meta.color,
-                  cursor: "pointer",
-                  fontWeight: "bold",
-                  textTransform: "capitalize",
-                }}
-              >
-                {loadingEvent === type ? "Logging..." : `${meta.icon} ${type}`}
-              </button>
-            );
-          })}
-        </div>
-
-        {message && (
-          <p style={{ marginTop: "1rem", color: "#111827" }}>{message}</p>
-        )}
+          Log your dog’s routine in seconds and keep a compact, colorful
+          timeline of potty breaks, meals, walks, and medications.
+        </p>
       </section>
 
-      <section
+      <div
         style={{
-          backgroundColor: "#fff",
-          border: "1px solid #ddd",
-          borderRadius: "16px",
-          padding: "1.25rem",
-          marginBottom: "1.5rem",
+          display: "grid",
+          gridTemplateColumns: "minmax(280px, 340px) minmax(0, 1fr)",
+          gap: "1.25rem",
+          alignItems: "start",
         }}
       >
-        <h2 style={{ marginBottom: "1rem", fontSize: "1.25rem" }}>
-          Today Summary
-        </h2>
-
-        {!selectedDogId ? (
-          <p style={{ color: "#4b5563" }}>
-            Add a dog first to see today’s summary.
-          </p>
-        ) : (
-          <div
+        <div style={{ display: "grid", gap: "1.25rem" }}>
+          <section
             style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
-              gap: "0.75rem",
+              backgroundColor: "#ffffff",
+              border: "1px solid #e5e7eb",
+              borderRadius: "24px",
+              padding: "1.25rem",
+              boxShadow: "0 10px 30px rgba(24, 33, 47, 0.05)",
             }}
           >
-            {EVENT_TYPES.map((type) => {
-              const meta = EVENT_META[type];
+            <label
+              htmlFor="dog-select"
+              style={{
+                display: "block",
+                fontWeight: "bold",
+                marginBottom: "0.75rem",
+                color: "#243041",
+              }}
+            >
+              Select Dog
+            </label>
 
-              return (
-                <div
-                  key={type}
+            <select
+              id="dog-select"
+              value={selectedDogId}
+              onChange={(e) => setSelectedDogId(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "0.9rem 1rem",
+                borderRadius: "14px",
+                border: "1px solid #d1d5db",
+                backgroundColor: "#fff",
+                color: "#111827",
+                marginBottom: "1rem",
+              }}
+            >
+              {dogs.length === 0 ? (
+                <option value="">No dogs added yet</option>
+              ) : (
+                dogs.map((dog) => (
+                  <option key={dog.id} value={dog.id}>
+                    {dog.name}
+                  </option>
+                ))
+              )}
+            </select>
+
+            {selectedDog ? (
+              <div
+                style={{
+                  padding: "1rem",
+                  borderRadius: "18px",
+                  background:
+                    "linear-gradient(180deg, #faf8f4 0%, #f5f1ea 100%)",
+                  border: "1px solid #e7ddd0",
+                }}
+              >
+                <h2
                   style={{
-                    border: `1px solid ${meta.border}`,
-                    borderRadius: "12px",
-                    padding: "0.9rem",
-                    backgroundColor: meta.bg,
+                    marginBottom: "0.4rem",
+                    fontSize: "1.2rem",
+                    color: "#18212f",
                   }}
                 >
-                  <div style={{ fontSize: "1rem", marginBottom: "0.3rem" }}>
-                    {meta.icon}{" "}
-                    <span
-                      style={{ color: meta.color, textTransform: "capitalize" }}
-                    >
-                      {type}
-                    </span>
-                  </div>
-                  <p
+                  {selectedDog.name}
+                </h2>
+                <p style={{ color: "#5b6472", marginBottom: "0.2rem" }}>
+                  Breed: {selectedDog.breed || "Not added"}
+                </p>
+                <p style={{ color: "#5b6472" }}>
+                  Birthdate: {selectedDog.birthdate || "Not added"}
+                </p>
+              </div>
+            ) : (
+              <p style={{ color: "#6b7280" }}>Add a dog first to begin.</p>
+            )}
+          </section>
+
+          <section
+            style={{
+              backgroundColor: "#ffffff",
+              border: "1px solid #e5e7eb",
+              borderRadius: "24px",
+              padding: "1.25rem",
+              boxShadow: "0 10px 30px rgba(24, 33, 47, 0.05)",
+            }}
+          >
+            <h2
+              style={{
+                fontSize: "1.1rem",
+                marginBottom: "1rem",
+                color: "#18212f",
+              }}
+            >
+              Quick Log
+            </h2>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))",
+                gap: "0.75rem",
+              }}
+            >
+              {EVENT_TYPES.map((type) => {
+                const meta = EVENT_META[type];
+
+                return (
+                  <button
+                    key={type}
+                    onClick={() => handleLogEvent(type)}
+                    disabled={loadingEvent === type || !selectedDogId}
                     style={{
-                      fontSize: "1.4rem",
-                      fontWeight: "bold",
+                      padding: "0.95rem 1rem",
+                      borderRadius: "16px",
+                      border: `1px solid ${meta.border}`,
+                      backgroundColor: meta.bg,
                       color: meta.color,
+                      cursor: "pointer",
+                      fontWeight: "bold",
+                      textTransform: "capitalize",
+                      boxShadow: "0 4px 12px rgba(17, 24, 39, 0.04)",
                     }}
                   >
-                    {todaySummary[type]}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </section>
+                    {loadingEvent === type
+                      ? "Logging..."
+                      : `${meta.icon} ${type}`}
+                  </button>
+                );
+              })}
+            </div>
 
-      <section>
-        <h2 style={{ marginBottom: "1rem", fontSize: "1.25rem" }}>Timeline</h2>
-
-        {!selectedDogId ? (
-          <p style={{ color: "#4b5563" }}>Add a dog first to start logging.</p>
-        ) : groupedByDay.length === 0 ? (
-          <p style={{ color: "#4b5563" }}>No events logged yet.</p>
-        ) : (
-          <div style={{ display: "grid", gap: "1rem" }}>
-            {groupedByDay.map((dayGroup) => (
-              <div
-                key={dayGroup.dateKey}
+            {message && (
+              <p
                 style={{
-                  backgroundColor: "#fff",
-                  border: "1px solid #ddd",
-                  borderRadius: "16px",
-                  padding: "1rem",
+                  marginTop: "1rem",
+                  color: "#243041",
+                  backgroundColor: "#f8fafc",
+                  border: "1px solid #e5e7eb",
+                  padding: "0.75rem 0.9rem",
+                  borderRadius: "12px",
                 }}
               >
-                <h3
-                  style={{
-                    marginBottom: "0.85rem",
-                    fontSize: "1rem",
-                    color: "#4b5563",
-                  }}
-                >
-                  {dayGroup.displayDate}
-                </h3>
+                {message}
+              </p>
+            )}
+          </section>
 
-                <div style={{ display: "grid", gap: "0.75rem" }}>
-                  {dayGroup.typeGroups.map((group) => {
-                    const meta = EVENT_META[group.type];
+          <section
+            style={{
+              backgroundColor: "#ffffff",
+              border: "1px solid #e5e7eb",
+              borderRadius: "24px",
+              padding: "1.25rem",
+              boxShadow: "0 10px 30px rgba(24, 33, 47, 0.05)",
+            }}
+          >
+            <h2
+              style={{
+                marginBottom: "1rem",
+                fontSize: "1.1rem",
+                color: "#18212f",
+              }}
+            >
+              Today Summary
+            </h2>
 
-                    return (
+            {!selectedDogId ? (
+              <p style={{ color: "#6b7280" }}>
+                Add a dog first to see today’s summary.
+              </p>
+            ) : (
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
+                  gap: "0.75rem",
+                }}
+              >
+                {EVENT_TYPES.map((type) => {
+                  const meta = EVENT_META[type];
+
+                  return (
+                    <div
+                      key={type}
+                      style={{
+                        border: `1px solid ${meta.border}`,
+                        borderRadius: "18px",
+                        padding: "0.9rem",
+                        backgroundColor: meta.bg,
+                      }}
+                    >
                       <div
-                        key={`${dayGroup.dateKey}-${group.type}`}
+                        style={{ fontSize: "1rem", marginBottom: "0.35rem" }}
+                      >
+                        {meta.icon}{" "}
+                        <span
+                          style={{
+                            color: meta.color,
+                            textTransform: "capitalize",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          {type}
+                        </span>
+                      </div>
+                      <p
                         style={{
-                          padding: "0.9rem",
-                          borderRadius: "12px",
-                          backgroundColor: meta.bg,
-                          border: `1px solid ${meta.border}`,
+                          fontSize: "1.5rem",
+                          fontWeight: "bold",
+                          color: meta.color,
                         }}
                       >
-                        <div
+                        {todaySummary[type]}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </section>
+        </div>
+
+        <section
+          style={{
+            backgroundColor: "#ffffff",
+            border: "1px solid #e5e7eb",
+            borderRadius: "24px",
+            padding: "1.25rem",
+            boxShadow: "0 10px 30px rgba(24, 33, 47, 0.05)",
+          }}
+        >
+          <h2
+            style={{
+              marginBottom: "1rem",
+              fontSize: "1.2rem",
+              color: "#18212f",
+            }}
+          >
+            Timeline
+          </h2>
+
+          {!selectedDogId ? (
+            <p style={{ color: "#6b7280" }}>
+              Add a dog first to start logging.
+            </p>
+          ) : groupedByDay.length === 0 ? (
+            <p style={{ color: "#6b7280" }}>No events logged yet.</p>
+          ) : (
+            <div style={{ display: "grid", gap: "1rem" }}>
+              {groupedByDay.map((dayGroup) => {
+                const isCollapsed = collapsedDates[dayGroup.dateKey];
+
+                return (
+                  <div
+                    key={dayGroup.dateKey}
+                    style={{
+                      border: "1px solid #e5e7eb",
+                      borderRadius: "20px",
+                      overflow: "hidden",
+                      background:
+                        "linear-gradient(180deg, #fff 0%, #fbfbfa 100%)",
+                    }}
+                  >
+                    <button
+                      onClick={() => toggleDate(dayGroup.dateKey)}
+                      style={{
+                        width: "100%",
+                        border: "none",
+                        background: "transparent",
+                        cursor: "pointer",
+                        padding: "1rem",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        gap: "1rem",
+                        textAlign: "left",
+                      }}
+                    >
+                      <div>
+                        <h3
                           style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "0.75rem",
-                            marginBottom: "0.6rem",
+                            fontSize: "1rem",
+                            color: "#243041",
+                            marginBottom: "0.2rem",
                           }}
                         >
-                          <div
-                            style={{
-                              width: "36px",
-                              height: "36px",
-                              borderRadius: "999px",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              backgroundColor: "#fff",
-                              border: `1px solid ${meta.border}`,
-                              fontSize: "1rem",
-                              flexShrink: 0,
-                            }}
-                          >
-                            {meta.icon}
-                          </div>
+                          {dayGroup.displayDate}
+                        </h3>
+                        <p style={{ color: "#6b7280", fontSize: "0.9rem" }}>
+                          {dayGroup.totalLogs} log
+                          {dayGroup.totalLogs > 1 ? "s" : ""}
+                        </p>
+                      </div>
 
-                          <div>
-                            <p
-                              style={{
-                                fontWeight: "bold",
-                                color: meta.color,
-                                textTransform: "capitalize",
-                                marginBottom: "0.1rem",
-                              }}
-                            >
-                              {group.type}
-                            </p>
-                            <p style={{ color: "#4b5563", fontSize: "0.9rem" }}>
-                              {group.events.length} log
-                              {group.events.length > 1 ? "s" : ""}
-                            </p>
-                          </div>
-                        </div>
+                      <span
+                        style={{
+                          fontSize: "1.1rem",
+                          color: "#6b7280",
+                          transform: isCollapsed
+                            ? "rotate(-90deg)"
+                            : "rotate(0deg)",
+                          transition: "transform 0.2s ease",
+                        }}
+                      >
+                        ▾
+                      </span>
+                    </button>
 
-                        <div
-                          style={{
-                            display: "flex",
-                            flexWrap: "wrap",
-                            gap: "0.5rem",
-                          }}
-                        >
-                          {group.events.map((event) => (
+                    {!isCollapsed && (
+                      <div
+                        style={{
+                          padding: "0 1rem 1rem",
+                          display: "grid",
+                          gap: "0.75rem",
+                        }}
+                      >
+                        {dayGroup.typeGroups.map((group) => {
+                          const meta = EVENT_META[group.type];
+
+                          return (
                             <div
-                              key={event.id}
+                              key={`${dayGroup.dateKey}-${group.type}`}
                               style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "0.45rem",
-                                padding: "0.45rem 0.7rem",
-                                borderRadius: "999px",
-                                backgroundColor: "#fff",
+                                padding: "0.9rem",
+                                borderRadius: "18px",
+                                backgroundColor: meta.bg,
                                 border: `1px solid ${meta.border}`,
                               }}
                             >
-                              <span
-                                style={{ fontSize: "0.9rem", color: "#374151" }}
-                              >
-                                {formatTime(event.created_at)}
-                              </span>
-
-                              <button
-                                onClick={() => handleDeleteEvent(event.id)}
-                                disabled={deletingEventId === event.id}
+                              <div
                                 style={{
-                                  border: "none",
-                                  background: "transparent",
-                                  color: "#6b7280",
-                                  cursor: "pointer",
-                                  width: "auto",
-                                  minWidth: "auto",
-                                  minHeight: "auto",
-                                  padding: 0,
-                                  fontSize: "0.95rem",
-                                  lineHeight: 1,
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "0.75rem",
+                                  marginBottom: "0.7rem",
                                 }}
-                                title="Delete this log"
                               >
-                                {deletingEventId === event.id ? "..." : "×"}
-                              </button>
+                                <div
+                                  style={{
+                                    width: "38px",
+                                    height: "38px",
+                                    borderRadius: "999px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    backgroundColor: "#fff",
+                                    border: `1px solid ${meta.border}`,
+                                    fontSize: "1rem",
+                                    flexShrink: 0,
+                                  }}
+                                >
+                                  {meta.icon}
+                                </div>
+
+                                <div>
+                                  <p
+                                    style={{
+                                      fontWeight: "bold",
+                                      color: meta.color,
+                                      textTransform: "capitalize",
+                                      marginBottom: "0.1rem",
+                                    }}
+                                  >
+                                    {group.type}
+                                  </p>
+                                  <p
+                                    style={{
+                                      color: "#5b6472",
+                                      fontSize: "0.9rem",
+                                    }}
+                                  >
+                                    {group.events.length} time
+                                    {group.events.length > 1 ? "s" : ""}
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div
+                                style={{
+                                  display: "flex",
+                                  flexWrap: "wrap",
+                                  gap: "0.55rem",
+                                }}
+                              >
+                                {group.events.map((event) => (
+                                  <div
+                                    key={event.id}
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      gap: "0.45rem",
+                                      padding: "0.5rem 0.75rem",
+                                      borderRadius: "999px",
+                                      backgroundColor: "#fff",
+                                      border: `1px solid ${meta.border}`,
+                                      boxShadow:
+                                        "0 2px 6px rgba(17, 24, 39, 0.03)",
+                                    }}
+                                  >
+                                    <span
+                                      style={{
+                                        fontSize: "0.9rem",
+                                        color: "#374151",
+                                        fontWeight: 500,
+                                      }}
+                                    >
+                                      {formatTime(event.created_at)}
+                                    </span>
+
+                                    <button
+                                      onClick={() =>
+                                        handleDeleteEvent(event.id)
+                                      }
+                                      disabled={deletingEventId === event.id}
+                                      style={{
+                                        border: "none",
+                                        background: "transparent",
+                                        color: "#6b7280",
+                                        cursor: "pointer",
+                                        width: "auto",
+                                        minWidth: "auto",
+                                        minHeight: "auto",
+                                        padding: 0,
+                                        fontSize: "0.95rem",
+                                        lineHeight: 1,
+                                      }}
+                                      title="Delete this log"
+                                    >
+                                      {deletingEventId === event.id
+                                        ? "..."
+                                        : "×"}
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
                             </div>
-                          ))}
-                        </div>
+                          );
+                        })}
                       </div>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </section>
+      </div>
     </main>
   );
 }
